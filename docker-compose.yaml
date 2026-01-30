@@ -1,0 +1,55 @@
+services:
+  jenkins:
+    container_name: jenkins-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-certs:/certs/client:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    restart: on-failure
+    group_add:
+      - ${DOCKER_SOCKET_GID}
+    networks:
+      jenkins-network:
+        ipv4_address: 192.168.20.2
+
+  sonarqube:
+    container_name: sonarqube-container
+    image: sonarqube
+    ports:
+      - "9000:9000"
+      - "9092:9092"
+    networks:
+      jenkins-network:
+        ipv4_address: 192.168.20.3
+    restart: on-failure
+    volumes:
+      - sonarqube_conf:/opt/sonarqube/conf
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_temp:/opt/sonarqube/temp
+
+volumes:
+  jenkins-data:
+  jenkins-certs:
+  sonarqube_conf:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  sonarqube_temp:
+
+networks:
+  jenkins-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.20.0/24
