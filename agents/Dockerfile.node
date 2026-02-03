@@ -1,0 +1,18 @@
+FROM jenkins/inbound-agent:latest
+ARG NODE_VERSION=24.13.0
+USER root
+
+RUN apt-get update && apt-get install -y curl && \
+    curl -fsSL https://get.nvm.sh | bash - && \
+    export NVM_DIR="/root/.nvm" && \ 
+    . "$NVM_DIR/nvm.sh" && \
+    nvm install ${NODE_VERSION}\
+    nvm use ${NODE_VERSION} && \
+    nvm alias default ${NODE_VERSION} && \
+    cp -r /root/.nvm /home/jenkins/.nvm && \
+    chown -R jenkins:jenkins /home/jenkins/.nvm
+
+ENV NVM_DIR="/home/jenkins/.nvm"
+ENV PATH="$NVM_DIR/versions/node/v${NODE_VERSION}/bin:$PATH"
+
+USER jenkins
