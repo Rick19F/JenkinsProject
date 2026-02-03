@@ -2,17 +2,15 @@ FROM jenkins/inbound-agent:latest
 ARG NODE_VERSION=24.13.0
 USER root
 
-RUN apt-get update && apt-get install -y curl && \
-    curl -fsSL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash - && \
-    export NVM_DIR="/root/.nvm" && \ 
-    . "$NVM_DIR/install.sh" && \
-    nvm install ${NODE_VERSION}\
-    nvm use ${NODE_VERSION} && \
-    nvm alias default ${NODE_VERSION} && \
-    cp -r /root/.nvm /home/jenkins/.nvm && \
-    chown -R jenkins:jenkins /home/jenkins/.nvm
+RUN apt-get update && apt-get install -y curl 
 
-ENV NVM_DIR="/home/jenkins/.nvm"
-ENV PATH="$NVM_DIR/versions/node/v${NODE_VERSION}/bin:$PATH"
+RUN curl -fsSL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh
+
+ENV NVM_DIR=/root/.nvm
+RUN bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION"
+
+ENTRYPOINT ["bash", "-c", "source $NVM_DIR/nvm.sh && exec \"$@\"", "--"]
+
+CMD ["/bin/bash"]
 
 USER jenkins
