@@ -3,9 +3,9 @@ ARG NODE_VERSION=24.13.0
 USER root
 
 RUN apt-get update && apt-get install -y curl && \
-    curl -fsSL https://get.nvm.sh | bash - && \
+    curl -fsSL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash - && \
     export NVM_DIR="/root/.nvm" && \ 
-    . "$NVM_DIR/nvm.sh" && \
+    . "$NVM_DIR/install.sh" && \
     nvm install ${NODE_VERSION}\
     nvm use ${NODE_VERSION} && \
     nvm alias default ${NODE_VERSION} && \
