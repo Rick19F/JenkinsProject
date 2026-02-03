@@ -9,6 +9,8 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | b
 ENV NVM_DIR=/root/.nvm
 RUN bash -c "source ${NVM_DIR}/nvm.sh && nvm install ${NODE_VERSION}"
 
+RUN bash -c "source ${NVM_DIR}/nvm.sh && corepack enable && corepack prepare pnpm@latest-10 --activate"
+
 RUN cp -r /root/.nvm /home/jenkins/.nvm && \
     chown -R jenkins:jenkins /home/jenkins/.nvm
 
