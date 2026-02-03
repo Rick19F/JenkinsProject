@@ -1,0 +1,6 @@
+FROM jenkins/agent:alpine
+USER root
+
+RUN apk add zip
+
+USER jenkins
